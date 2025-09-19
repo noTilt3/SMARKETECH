@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smarketech - Relatórios</title>
+    <link rel="stylesheet" href="/home.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">🛒 Smarketech</h1>
+            <nav class="nav">
+                <a href="/index1.html" class="nav-link">Produtos</a>
+                <a href="/relatorios.html" class="nav-link active">Relatórios</a>
+                <button id="logoutBtn" class="btn btn-secondary btn-sm">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h2 class="hero-title">Dashboard de Relatórios</h2>
+                <p class="hero-subtitle">Análises inteligentes e insights do seu mercado</p>
+                
+                <div class="dashboard-controls">
+                    <div class="date-range-picker">
+                        <label for="startDate">Data Inicial:</label>
+                        <input type="date" id="startDate" class="form-control">
+                    </div>
+                    <div class="date-range-picker">
+                        <label for="endDate">Data Final:</label>
+                        <input type="date" id="endDate" class="form-control">
+                    </div>
+                    <button id="updateReports" class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> Atualizar Relatórios
+                    </button>
+                </div>
+            </section>
+
+            <!-- Cards de Estatísticas -->
+            <section class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-boxes"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Total de Produtos</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalValue">R$ 0,00</h3>
+                        <p>Valor Total em Estoque</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="lowStock">0</h3>
+                        <p>Produtos com Estoque Baixo</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="expiringSoon">0</h3>
+                        <p>Vencendo em 30 dias</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Gráficos -->
+            <section class="charts-section">
+                <div class="charts-grid">
+                    <!-- Gráfico de Barras - Produtos por Preço -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Distribuição de Preços</h3>
+                            <div class="chart-controls">
+                                <select id="priceChartType" class="form-control">
+                                    <option value="bar">Barras</option>
+                                    <option value="line">Linha</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="priceChart" style="position: relative; height: 300px;">
+                            <!-- Fallback HTML/CSS Chart -->
+                            <div id="priceChartFallback" style="display: block; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; color: white; text-align: center;">
+                                <h4 style="margin: 0 0 20px 0; font-size: 1.2rem;">📊 Distribuição de Preços</h4>
+                                <div id="priceBars" style="display: flex; justify-content: space-around; align-items: end; height: 200px; gap: 10px;">
+                                    <div class="price-bar" style="background: rgba(255,255,255,0.8); width: 60px; border-radius: 4px 4px 0 0; animation: growUp 2s ease-out; height: 0%;"></div>
+                                    <div class="price-bar" style="background: rgba(255,255,255,0.8); width: 60px; border-radius: 4px 4px 0 0; animation: growUp 2s ease-out 0.2s both; height: 0%;"></div>
+                                    <div class="price-bar" style="background: rgba(255,255,255,0.8); width: 60px; border-radius: 4px 4px 0 0; animation: growUp 2s ease-out 0.4s both; height: 0%;"></div>
+                                    <div class="price-bar" style="background: rgba(255,255,255,0.8); width: 60px; border-radius: 4px 4px 0 0; animation: growUp 2s ease-out 0.6s both; height: 0%;"></div>
+                                    <div class="price-bar" style="background: rgba(255,255,255,0.8); width: 60px; border-radius: 4px 4px 0 0; animation: growUp 2s ease-out 0.8s both; height: 0%;"></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-around; margin-top: 10px; font-size: 0.8rem;">
+                                    <span>R$ 0-10</span>
+                                    <span>R$ 10-25</span>
+                                    <span>R$ 25-50</span>
+                                    <span>R$ 50-100</span>
+                                    <span>R$ 100+</span>
+                                </div>
+                            </div>
+                            <canvas id="priceChartCanvas" width="400" height="300" style="display: none;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Pizza - Categorias de Estoque -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Status do Estoque</h3>
+                            <div class="chart-controls">
+                                <button id="togglePieChart" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-eye"></i> Detalhes
+                                </button>
+                            </div>
+                        </div>
+                        <div id="stockChart" style="position: relative; height: 300px;">
+                            <!-- Fallback HTML/CSS Chart -->
+                            <div id="stockChartFallback" style="display: block; padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; color: white; text-align: center;">
+                                <h4 style="margin: 0 0 20px 0; font-size: 1.2rem;">🥧 Status do Estoque</h4>
+                                <div style="display: flex; justify-content: center; align-items: center; height: 200px;">
+                                    <div style="position: relative; width: 200px; height: 200px;">
+                                        <!-- Estoque Alto -->
+                                        <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 100px solid transparent; border-right: 100px solid transparent; border-bottom: 80px solid rgba(255,255,255,0.8); animation: pieSlice1 2s ease-out 0.5s both;"></div>
+                                        <!-- Estoque Médio -->
+                                        <div style="position: absolute; top: 80px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 80px solid transparent; border-right: 80px solid transparent; border-bottom: 60px solid rgba(255,255,255,0.6); animation: pieSlice2 2s ease-out 1s both;"></div>
+                                        <!-- Estoque Baixo -->
+                                        <div style="position: absolute; top: 140px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 60px solid transparent; border-right: 60px solid transparent; border-bottom: 40px solid rgba(255,255,255,0.4); animation: pieSlice3 2s ease-out 1.5s both;"></div>
+                                        <!-- Sem Estoque -->
+                                        <div style="position: absolute; top: 180px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 40px solid transparent; border-right: 40px solid transparent; border-bottom: 20px solid rgba(255,255,255,0.2); animation: pieSlice4 2s ease-out 2s both;"></div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-around; margin-top: 15px; font-size: 0.8rem;">
+                                    <span>🔵 Alto</span>
+                                    <span>🟡 Médio</span>
+                                    <span>🟠 Baixo</span>
+                                    <span>🔴 Sem</span>
+                                </div>
+                            </div>
+                            <canvas id="stockChartCanvas" width="400" height="300" style="display: none;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Linha - Tendências -->
+                    <div class="chart-container full-width">
+                        <div class="chart-header">
+                            <h3>Tendências de Valores</h3>
+                            <div class="chart-controls">
+                                <select id="trendChartPeriod" class="form-control">
+                                    <option value="7">Últimos 7 dias</option>
+                                    <option value="30">Últimos 30 dias</option>
+                                    <option value="90">Últimos 90 dias</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="trendChart" style="position: relative; height: 300px;">
+                            <!-- Fallback HTML/CSS Chart -->
+                            <div id="trendChartFallback" style="display: block; padding: 20px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 12px; color: white; text-align: center;">
+                                <h4 style="margin: 0 0 20px 0; font-size: 1.2rem;">📈 Tendências de Valores</h4>
+                                <div style="position: relative; height: 200px; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px;">
+                                    <svg width="100%" height="100%" viewBox="0 0 400 180" style="position: absolute; top: 0; left: 0;">
+                                        <polyline
+                                            points="20,160 60,140 100,120 140,100 180,80 220,90 260,70 300,60 340,50 380,40"
+                                            fill="none"
+                                            stroke="rgba(255,255,255,0.8)"
+                                            stroke-width="3"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            style="animation: drawLine 3s ease-in-out 0.5s both;"
+                                        />
+                                        <circle cx="20" cy="160" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 1s both;" />
+                                        <circle cx="60" cy="140" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 1.2s both;" />
+                                        <circle cx="100" cy="120" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 1.4s both;" />
+                                        <circle cx="140" cy="100" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 1.6s both;" />
+                                        <circle cx="180" cy="80" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 1.8s both;" />
+                                        <circle cx="220" cy="90" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 2s both;" />
+                                        <circle cx="260" cy="70" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 2.2s both;" />
+                                        <circle cx="300" cy="60" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 2.4s both;" />
+                                        <circle cx="340" cy="50" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 2.6s both;" />
+                                        <circle cx="380" cy="40" r="4" fill="rgba(255,255,255,0.9)" style="animation: fadeIn 0.5s ease-out 2.8s both;" />
+                                    </svg>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.8rem;">
+                                    <span>30 dias atrás</span>
+                                    <span>Hoje</span>
+                                </div>
+                            </div>
+                            <canvas id="trendChartCanvas" width="800" height="300" style="display: none;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Barras Horizontais - Top Produtos -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Top 10 Produtos por Valor</h3>
+                        </div>
+                        <div id="topProductsChart" style="position: relative; height: 300px;">
+                            <!-- Fallback HTML/CSS Chart -->
+                            <div id="topProductsChartFallback" style="display: block; padding: 20px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 12px; color: white; text-align: center;">
+                                <h4 style="margin: 0 0 20px 0; font-size: 1.2rem;">🏆 Top 10 Produtos</h4>
+                                <div style="height: 200px; display: flex; flex-direction: column; justify-content: space-around;">
+                                    <div class="product-bar" style="display: flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px; margin: 2px 0; animation: slideInLeft 0.8s ease-out 0.5s both;">
+                                        <span style="width: 20px; text-align: center; font-weight: bold;">1</span>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; margin: 0 10px; position: relative; overflow: hidden;">
+                                            <div style="background: rgba(255,255,255,0.8); height: 100%; width: 95%; border-radius: 10px; animation: fillBar 2s ease-out 1s both;"></div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">R$ 1.200</span>
+                                    </div>
+                                    <div class="product-bar" style="display: flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px; margin: 2px 0; animation: slideInLeft 0.8s ease-out 0.7s both;">
+                                        <span style="width: 20px; text-align: center; font-weight: bold;">2</span>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; margin: 0 10px; position: relative; overflow: hidden;">
+                                            <div style="background: rgba(255,255,255,0.8); height: 100%; width: 85%; border-radius: 10px; animation: fillBar 2s ease-out 1.2s both;"></div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">R$ 980</span>
+                                    </div>
+                                    <div class="product-bar" style="display: flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px; margin: 2px 0; animation: slideInLeft 0.8s ease-out 0.9s both;">
+                                        <span style="width: 20px; text-align: center; font-weight: bold;">3</span>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; margin: 0 10px; position: relative; overflow: hidden;">
+                                            <div style="background: rgba(255,255,255,0.8); height: 100%; width: 75%; border-radius: 10px; animation: fillBar 2s ease-out 1.4s both;"></div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">R$ 750</span>
+                                    </div>
+                                    <div class="product-bar" style="display: flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px; margin: 2px 0; animation: slideInLeft 0.8s ease-out 1.1s both;">
+                                        <span style="width: 20px; text-align: center; font-weight: bold;">4</span>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; margin: 0 10px; position: relative; overflow: hidden;">
+                                            <div style="background: rgba(255,255,255,0.8); height: 100%; width: 65%; border-radius: 10px; animation: fillBar 2s ease-out 1.6s both;"></div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">R$ 620</span>
+                                    </div>
+                                    <div class="product-bar" style="display: flex; align-items: center; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px; margin: 2px 0; animation: slideInLeft 0.8s ease-out 1.3s both;">
+                                        <span style="width: 20px; text-align: center; font-weight: bold;">5</span>
+                                        <div style="flex: 1; background: rgba(255,255,255,0.3); border-radius: 10px; height: 20px; margin: 0 10px; position: relative; overflow: hidden;">
+                                            <div style="background: rgba(255,255,255,0.8); height: 100%; width: 55%; border-radius: 10px; animation: fillBar 2s ease-out 1.8s both;"></div>
+                                        </div>
+                                        <span style="font-size: 0.8rem;">R$ 480</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas id="topProductsChartCanvas" width="400" height="300" style="display: none;"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Área - Validade -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>Produtos por Validade</h3>
+                        </div>
+                        <div id="validityChart" style="position: relative; height: 300px;">
+                            <!-- Fallback HTML/CSS Chart -->
+                            <div id="validityChartFallback" style="display: block; padding: 20px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; color: #333; text-align: center;">
+                                <h4 style="margin: 0 0 20px 0; font-size: 1.2rem;">📅 Produtos por Validade</h4>
+                                <div style="height: 200px; display: flex; justify-content: space-around; align-items: end; gap: 8px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 0.5s both;">
+                                        <div style="background: #ff6b6b; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 0.5s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">Vencidos</span>
+                                        <span style="font-size: 0.6rem;">2</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 0.7s both;">
+                                        <div style="background: #ffa726; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 0.7s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">7 dias</span>
+                                        <span style="font-size: 0.6rem;">3</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 0.9s both;">
+                                        <div style="background: #42a5f5; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 0.9s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">30 dias</span>
+                                        <span style="font-size: 0.6rem;">5</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 1.1s both;">
+                                        <div style="background: #66bb6a; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 1.1s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">90 dias</span>
+                                        <span style="font-size: 0.6rem;">8</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 1.3s both;">
+                                        <div style="background: #ab47bc; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 1.3s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">90+ dias</span>
+                                        <span style="font-size: 0.6rem;">12</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center; animation: growUp 2s ease-out 1.5s both;">
+                                        <div style="background: #78909c; width: 40px; height: 0%; border-radius: 4px 4px 0 0; margin-bottom: 8px; animation: growUp 2s ease-out 1.5s both;"></div>
+                                        <span style="font-size: 0.7rem; font-weight: bold;">Sem data</span>
+                                        <span style="font-size: 0.6rem;">4</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas id="validityChartCanvas" width="400" height="300" style="display: none;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabela de Dados Detalhados -->
+            <section class="data-table-section">
+                <div class="table-header">
+                    <h3>Análise Detalhada dos Produtos</h3>
+                    <div class="table-controls">
+                        <input type="text" id="tableSearch" placeholder="Buscar produtos..." class="form-control">
+                        <select id="tableSort" class="form-control">
+                            <option value="nome">Nome</option>
+                            <option value="preco">Preço</option>
+                            <option value="quantidade">Quantidade</option>
+                            <option value="validade">Validade</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="productsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Preço</th>
+                                <th>Estoque</th>
+                                <th>Validade</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Dados serão carregados via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Smarketech. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="/relatorios.js"></script>
+</body>
+</html>

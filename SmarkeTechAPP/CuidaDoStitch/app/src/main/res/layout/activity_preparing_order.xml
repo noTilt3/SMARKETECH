@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@drawable/background_gradient">
+
+    <TextView
+        android:id="@+id/preparing_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Preparando seu pedido..."
+        android:textSize="20sp"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"
+        android:textColor="@color/white" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:progress="0"
+        android:max="100" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Coloque os itens na esteira para contagem"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="@color/white" />
+
+</LinearLayout>
