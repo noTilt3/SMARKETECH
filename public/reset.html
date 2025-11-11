@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redefinir Senha</title>
+    <link rel="stylesheet" href="/home.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card" style="max-width: 520px">
+        <div class="login-header">
+          <h1 class="logo">🛒 Smarketech</h1>
+          <h2>Defina uma nova senha</h2>
+          <p>Digite sua nova senha abaixo</p>
+        </div>
+
+        <form id="resetForm" class="auth-form">
+          <div class="form-group">
+            <label for="senha">Nova senha</label>
+            <input
+              type="password"
+              id="senha"
+              class="form-control"
+              required
+              minlength="6"
+            />
+          </div>
+          <div class="form-group">
+            <label for="senha2">Confirmar nova senha</label>
+            <input
+              type="password"
+              id="senha2"
+              class="form-control"
+              required
+              minlength="6"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">
+            <i class="fas fa-lock"></i> Redefinir senha
+          </button>
+        </form>
+
+        <div class="auth-switch" style="margin-top: 1rem">
+          <p>Lembrou a senha? <a href="/">Voltar ao login</a></p>
+        </div>
+
+        <div id="resetMessage" class="auth-message hidden"></div>
+      </div>
+    </div>
+
+    <script src="/reset.js"></script>
+  </body>
+</html>

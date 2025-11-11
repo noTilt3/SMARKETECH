@@ -23,7 +23,7 @@ describe("Validation Middleware - Unit Tests", () => {
         nome: "Valid Product",
         precovenda: 25.0,
         precocompra: 15.0,
-        quantidade: 10,
+        qtd: 10,
         dtval: "2025-12-31",
       };
 

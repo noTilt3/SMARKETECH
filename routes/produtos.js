@@ -13,7 +13,7 @@ const productController = require("../controllers/controllerProdutos");
 
 /**
  * @swagger
- * /api/products:
+ * /api/produtos:
  *   get:
  *     summary: Lista todos os produtos
  *     description: Retorna todos os produtos cadastrados no sistema
@@ -38,7 +38,7 @@ router.get("/", productController.getAllProducts);
 
 /**
  * @swagger
- * /api/products/search:
+ * /api/produtos/search:
  *   get:
  *     summary: Busca produtos por nome
  *     description: Retorna produtos que correspondem ao termo de busca
@@ -76,7 +76,7 @@ router.get("/search", productController.searchProducts);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   get:
  *     summary: Obtém um produto específico
  *     description: Retorna os detalhes de um produto pelo seu ID
@@ -112,7 +112,7 @@ router.get("/:id", productController.getProductById);
 
 /**
  * @swagger
- * /api/products:
+ * /api/produtos:
  *   post:
  *     summary: Cria um novo produto
  *     description: Adiciona um novo produto ao sistema
@@ -147,7 +147,7 @@ router.post("/", productController.createProduct);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   put:
  *     summary: Atualiza um produto
  *     description: Atualiza os dados de um produto existente
@@ -195,7 +195,7 @@ router.put("/:id", productController.updateProduct);
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   delete:
  *     summary: Exclui um produto
  *     description: Remove um produto do sistema

@@ -14,15 +14,17 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/dist/date-fns.min.js"></script>
   </head>
   <body>
     <header class="header">
       <div class="container">
         <h1 class="logo">🛒 Smarketech</h1>
         <nav class="nav">
-          <a href="/home.html" class="nav-link">Produtos</a>
+          <a href="/produtos" class="nav-link">Produtos</a>
           <a href="/relatorios.html" class="nav-link active">Relatórios</a>
+          <a href="/pedidos" class="nav-link">Pedidos</a>
+          <a href="/perfil" class="nav-link">Perfil</a>
           <button id="logoutBtn" class="btn btn-secondary btn-sm">
             <i class="fas fa-sign-out-alt"></i> Sair
           </button>
@@ -37,20 +39,6 @@
           <p class="hero-subtitle">
             Análises inteligentes e insights do seu mercado
           </p>
-
-          <div class="dashboard-controls">
-            <div class="date-range-picker">
-              <label for="startDate">Data Inicial:</label>
-              <input type="date" id="startDate" class="form-control" />
-            </div>
-            <div class="date-range-picker">
-              <label for="endDate">Data Final:</label>
-              <input type="date" id="endDate" class="form-control" />
-            </div>
-            <button id="updateReports" class="btn btn-primary">
-              <i class="fas fa-sync-alt"></i> Atualizar Relatórios
-            </button>
-          </div>
         </section>
 
         <!-- Cards de Estatísticas -->
@@ -345,13 +333,6 @@
             <div class="chart-container full-width">
               <div class="chart-header">
                 <h3>Tendências de Valores</h3>
-                <div class="chart-controls">
-                  <select id="trendChartPeriod" class="form-control">
-                    <option value="7">Últimos 7 dias</option>
-                    <option value="30">Últimos 30 dias</option>
-                    <option value="90">Últimos 90 dias</option>
-                  </select>
-                </div>
               </div>
               <div id="trendChart" style="position: relative; height: 300px">
                 <!-- Fallback HTML/CSS Chart -->
@@ -951,13 +932,13 @@
               <select id="tableSort" class="form-control">
                 <option value="nome">Nome</option>
                 <option value="preco">Preço</option>
-                <option value="quantidade">Quantidade</option>
+                <option value="qtd">Quantidade</option>
                 <option value="validade">Validade</option>
               </select>
             </div>
           </div>
           <div class="table-container">
-            <table id="productsTable" class="data-table">
+            <table id="produtosTable" class="data-table">
               <thead>
                 <tr>
                   <th>Produto</th>
@@ -965,12 +946,9 @@
                   <th>Estoque</th>
                   <th>Validade</th>
                   <th>Status</th>
-                  <th>Ações</th>
                 </tr>
               </thead>
-              <tbody id="productsTableBody">
-                <!-- Dados serão carregados via JavaScript -->
-              </tbody>
+              <tbody id="produtosTableBody"></tbody>
             </table>
           </div>
         </section>
@@ -983,6 +961,8 @@
       </div>
     </footer>
 
+    <script src="/api.js"></script>
     <script src="/relatorios.js"></script>
+    <script src="/chat-fab.js"></script>
   </body>
 </html>

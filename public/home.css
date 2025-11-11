@@ -210,7 +210,7 @@ body {
 }
 
 /* Products Section */
-.products-section {
+.produtos-section {
   background: white;
   border-radius: 24px;
   padding: 2.5rem;
@@ -245,7 +245,7 @@ body {
 }
 
 /* Products Grid */
-.products-grid {
+.produtos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
@@ -360,7 +360,7 @@ body {
   display: none;
 }
 
-.no-products,
+.no-produtos,
 .error-message {
   text-align: center;
   padding: 4rem;
@@ -907,7 +907,7 @@ body {
     flex-direction: column;
   }
 
-  .products-grid {
+  .produtos-grid {
     grid-template-columns: 1fr;
   }
 

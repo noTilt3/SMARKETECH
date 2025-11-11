@@ -1,20 +1,12 @@
-process.env.JWT_SECRET = "fallback-secret";
+// tests/setup.js - Para testes de integração real
+process.env.NODE_ENV = 'test';
 
-// Mock do console
-global.console = {
-  log: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-};
+// Timeout aumentado para testes de integração
+jest.setTimeout(60000); // 60 segundos
 
-// Configurações de timeout
-jest.setTimeout(30000);
-
-// Cleanup after all tests
+// Cleanup global
 afterAll(async () => {
-  // Close any open handles
-  if (global.gc) {
-    global.gc();
-  }
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
+  await prisma.$disconnect();
 });

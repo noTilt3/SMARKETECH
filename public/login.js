@@ -201,39 +201,44 @@ class AuthManager {
   checkExistingAuth() {
     const token = localStorage.getItem("authToken");
     if (token) {
-      // Verificar se o token ainda é válido
-      this.validateToken(token);
+      console.log("Token encontrado, usuário já está autenticado");
+      if (
+        window.location.pathname === "/" ||
+        window.location.pathname === "/login.html"
+      ) {
+        window.location.href = "/home.html";
+      }
     }
   }
 
   async validateToken(token) {
     try {
       console.log("Validando token...");
-      const response = await fetch("/api/auth/validate", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
 
-      console.log("Status da resposta:", response.status);
+      const response = await apiFetch("/api/auth/validate");
 
-      if (response.ok) {
+      console.log("Token válido!");
+      if (
+        window.location.pathname === "/" ||
+        window.location.pathname === "/login.html"
+      ) {
         window.location.href = "/home.html";
-      } else {
-        console.log("Token inválido!");
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userEmail");
       }
     } catch (error) {
-      console.error("Erro ao validar token:", error);
+      console.log("Token inválido ou erro na validação:", error);
       localStorage.removeItem("authToken");
       localStorage.removeItem("userEmail");
+
+      if (
+        window.location.pathname !== "/" &&
+        !window.location.pathname.includes("login.html")
+      ) {
+        window.location.href = "/";
+      }
     }
   }
 }
 
-// Inicializar quando o DOM estiver carregado
 document.addEventListener("DOMContentLoaded", () => {
   new AuthManager();
 });

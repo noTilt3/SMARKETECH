@@ -57,17 +57,25 @@ describe("Auth Middleware - Unit Tests", () => {
     });
   });
 
-  describe("generateToken", () => {
-    test("should generate token with correct payload", () => {
-      const payload = { id: 1, email: "test@email.com" };
-      jwt.sign.mockReturnValue("generated-token");
-
+  describe('generateToken', () => {
+    it('should generate token with correct payload', () => {
+      const payload = { id: 1, email: 'test@email.com' };
+      
+      // ✅ Configura o mock para retornar um token previsível
+      jwt.sign.mockReturnValue('mock-token-123');
+      
+      // Gera o token (usará o mock)
       const token = generateToken(payload);
-
-      expect(jwt.sign).toHaveBeenCalledWith(payload, "fallback-secret", {
-        expiresIn: "1h",
-      });
-      expect(token).toBe("generated-token");
+  
+      // ✅ Verifica se jwt.sign foi chamado corretamente
+      expect(jwt.sign).toHaveBeenCalledWith(
+        payload,
+        process.env.JWT_SECRET || "fallback-secret",
+        { expiresIn: "1h" }
+      );
+      
+      // ✅ Verifica o token retornado
+      expect(token).toBe('mock-token-123');
     });
   });
 });

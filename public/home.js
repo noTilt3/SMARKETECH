@@ -1,6 +1,17 @@
+/*(async () => {
+    try {
+      const res = await fetch("/api/produtos");
+      const data = await res.json();
+      console.log(data);
+    } catch (err) {
+      console.error(err);
+    }
+  })();
+*/
+
 class ProductManager {
   constructor() {
-    this.products = [];
+    this.produtos = [];
     this.currentProduct = null;
     this.isEditing = false;
     this.init();
@@ -11,6 +22,7 @@ class ProductManager {
     this.setupEventListeners();
   }
 
+  //--------------------------
   async loadProducts(searchTerm = "") {
     this.showLoading();
     this.hideError();
@@ -18,19 +30,11 @@ class ProductManager {
 
     try {
       const url = searchTerm
-        ? `/api/products/search?q=${encodeURIComponent(searchTerm)}`
-        : "/api/products";
+        ? `/api/produtos/search?q=${encodeURIComponent(searchTerm)}`
+        : "/api/produtos";
 
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(url, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
+      this.produtos = await apiFetch(url);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      this.products = await response.json();
       this.displayProducts();
       this.updateProductCount();
     } catch (error) {
@@ -42,19 +46,19 @@ class ProductManager {
   }
 
   displayProducts() {
-    const grid = document.getElementById("productsGrid");
+    const grid = document.getElementById("produtosGrid");
     if (!grid) {
-      console.error("Elemento productsGrid não encontrado");
+      console.error("Elemento produtosGrid não encontrado");
       return;
     }
     grid.innerHTML = "";
 
-    if (this.products.length === 0) {
+    if (this.produtos.length === 0) {
       this.showNoProducts();
       return;
     }
 
-    this.products.forEach((product) => {
+    this.produtos.forEach((product) => {
       const card = this.createProductCard(product);
       grid.appendChild(card);
     });
@@ -65,22 +69,22 @@ class ProductManager {
     card.className = "product-card";
     card.dataset.productId = product.id; // Adiciona ID como data attribute
 
-    const quantityClass = product.quantidade < 10 ? "low" : "";
+    const quantityClass = product.qtd < 10 ? "low" : "";
 
     card.innerHTML = `
             <h3 class="product-name">${this.escapeHtml(product.nome)}</h3>
             <div class="product-price">R$ ${parseFloat(
-              product.preco || 0
+              product.precovenda || 0
             ).toFixed(2)}</div>
             <div class="product-quantity ${quantityClass}">
-                Estoque: ${product.quantidade} unidades
+                Estoque: ${product.qtd} unidades
             </div>
             ${
-              product.data_validade
+              product.dtval
                 ? `
                 <div class="product-date">
                     <i class="fas fa-calendar"></i> Validade: ${new Date(
-                      product.data_validade
+                      product.dtval
                     ).toLocaleDateString("pt-BR")}
                 </div>
             `
@@ -104,8 +108,8 @@ class ProductManager {
 
   updateProductCount() {
     const countElement = document.getElementById("productCount");
-    countElement.textContent = `${this.products.length} produto${
-      this.products.length !== 1 ? "s" : ""
+    countElement.textContent = `${this.produtos.length} produto${
+      this.produtos.length !== 1 ? "s" : ""
     }`;
   }
 
@@ -159,7 +163,7 @@ class ProductManager {
     });
 
     // Event delegation para os botões dos cards
-    document.getElementById("productsGrid").addEventListener("click", (e) => {
+    document.getElementById("produtosGrid").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
 
@@ -181,7 +185,7 @@ class ProductManager {
     });
   }
 
-  async saveProduct() {
+  /*async saveProduct() {
     // Validação do formulário
     if (!this.validateForm()) {
       return;
@@ -191,7 +195,7 @@ class ProductManager {
       nome: document.getElementById("productName").value.trim(),
       precocompra: parseFloat(document.getElementById("productPriceBuy").value),
       precovenda: parseFloat(document.getElementById("productPriceSell").value),
-      quantidade: parseInt(document.getElementById("productQuantity").value),
+      qtd: parseInt(document.getElementById("productQuantity").value),
       dtval: document.getElementById("productValidity").value || null,
     };
 
@@ -202,7 +206,7 @@ class ProductManager {
       if (this.isEditing) {
         console.log("Editando produto:", this.currentProduct.id);
         const token = localStorage.getItem("authToken");
-        response = await fetch(`/api/products/${this.currentProduct.id}`, {
+        response = await fetch(`/api/produtos/${this.currentProduct.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -213,7 +217,7 @@ class ProductManager {
       } else {
         console.log("Criando novo produto");
         const token = localStorage.getItem("authToken");
-        response = await fetch("/api/products", {
+        response = await fetch("/api/produtos", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -239,6 +243,57 @@ class ProductManager {
           ? "Produto atualizado com sucesso!"
           : "Produto cadastrado com sucesso!"
       );
+      this.closeModal();
+      await this.loadProducts();
+    } catch (error) {
+      console.error("Erro ao salvar produto:", error);
+      this.showError(
+        error.message || "Erro ao salvar produto. Tente novamente."
+      );
+    }
+  }
+  */
+
+  async saveProduct() {
+    if (!this.validateForm()) {
+      return;
+    }
+
+    const formData = {
+      nome: document.getElementById("productName").value.trim(),
+      precocompra:
+        parseFloat(document.getElementById("productPriceBuy").value) || 0,
+      precovenda:
+        parseFloat(document.getElementById("productPriceSell").value) || 0,
+      qtd: parseInt(document.getElementById("productQuantity").value) || 0,
+      dtval: document.getElementById("productValidity").value.trim() || null,
+    };
+
+    try {
+      let result;
+
+      if (this.isEditing) {
+        console.log("Editando produto:", this.currentProduct.id);
+        // CORREÇÃO: usar apiFetch em vez de fetch manual
+        result = await apiFetch(`/api/produtos/${this.currentProduct.id}`, {
+          method: "PUT",
+          body: JSON.stringify(formData),
+        });
+      } else {
+        console.log("Criando novo produto");
+        // CORREÇÃO: usar apiFetch em vez de fetch manual
+        result = await apiFetch("/api/produtos", {
+          method: "POST",
+          body: JSON.stringify(formData),
+        });
+      }
+
+      this.showSuccess(
+        this.isEditing
+          ? "Produto atualizado com sucesso!"
+          : "Produto cadastrado com sucesso!"
+      );
+
       this.closeModal();
       await this.loadProducts();
     } catch (error) {
@@ -308,7 +363,7 @@ class ProductManager {
       isValid = false;
     }
 
-    // Validar quantidade
+    // Validar qtd
     if (!quantity || quantity < 0) {
       this.showFieldError(
         "productQuantity",
@@ -366,19 +421,10 @@ class ProductManager {
   async deleteProductById(id) {
     try {
       console.log("Excluindo produto:", id);
-      const token = localStorage.getItem("authToken");
-      const response = await fetch(`/api/products/${id}`, {
+
+      await apiFetch(`/api/produtos/${id}`, {
         method: "DELETE",
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-
-      console.log("Resposta da exclusão:", response.status);
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Erro da API:", errorData);
-        throw new Error(errorData.error || "Erro ao excluir produto");
-      }
 
       this.showSuccess("Produto excluído com sucesso!");
       await this.loadProducts();
@@ -397,8 +443,8 @@ class ProductManager {
     successDiv.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>${message}`;
 
     // Inserir no topo da seção de produtos
-    const productsSection = document.querySelector(".products-section");
-    productsSection.insertBefore(successDiv, productsSection.firstChild);
+    const produtosSection = document.querySelector(".produtos-section");
+    produtosSection.insertBefore(successDiv, produtosSection.firstChild);
 
     // Remover após 3 segundos
     setTimeout(() => {
@@ -433,10 +479,10 @@ class ProductManager {
       document.getElementById("productName").value = product.nome;
       document.getElementById("productPriceBuy").value =
         product.precocompra || "";
-      document.getElementById("productPriceSell").value = product.preco;
-      document.getElementById("productQuantity").value = product.quantidade;
-      document.getElementById("productValidity").value = product.data_validade
-        ? product.data_validade.split("T")[0]
+      document.getElementById("productPriceSell").value = product.precovenda;
+      document.getElementById("productQuantity").value = product.qtd;
+      document.getElementById("productValidity").value = product.dtval
+        ? product.dtval.split("T")[0]
         : "";
     } else {
       form.reset();
@@ -521,9 +567,24 @@ window.onclick = function (event) {
 function checkAuth() {
   const token = localStorage.getItem("authToken");
   if (!token) {
-    window.location.href = "/";
+    console.log("Token não encontrado, redirecionando para login");
+    window.location.href = "/login.html";
     return false;
   }
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp && payload.exp * 1000 < Date.now()) {
+      console.log("Token expirado, redirecionando para login");
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("userEmail");
+      window.location.href = "/login.html";
+      return false;
+    }
+  } catch (error) {
+    console.log("Erro ao verificar token:", error);
+  }
+
   return true;
 }
 
@@ -554,7 +615,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.viewProduct = function (id) {
       console.log("viewProduct chamada com id:", id);
       if (productManager) {
-        const product = productManager.products.find((p) => p.id === id);
+        const product = productManager.produtos.find((p) => p.id === id);
         if (product) {
           const modal = document.getElementById("viewModal");
           const details = document.getElementById("productDetails");
@@ -564,8 +625,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
-          const validityText = product.data_validade
-            ? new Date(product.data_validade).toLocaleDateString("pt-BR")
+          const validityText = product.dtval
+            ? new Date(product.dtval).toLocaleDateString("pt-BR")
             : "Não informada";
 
           details.innerHTML = `
@@ -575,9 +636,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                   product.nome
                                 }</h3>
                                 <div style="font-size: 1.5rem; font-weight: 700; color: #059669; margin-bottom: 1rem;">
-                                    R$ ${parseFloat(product.preco || 0).toFixed(
-                                      2
-                                    )}
+                                    R$ ${parseFloat(
+                                      product.precovenda || 0
+                                    ).toFixed(2)}
                                 </div>
                             </div>
                             
@@ -585,11 +646,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                 <div>
                                     <strong>Quantidade em Estoque:</strong>
                                     <div style="color: ${
-                                      product.quantidade < 10
-                                        ? "#dc2626"
-                                        : "#059669"
+                                      product.qtd < 10 ? "#dc2626" : "#059669"
                                     }; font-weight: 600;">
-                                        ${product.quantidade} unidades
+                                        ${product.qtd} unidades
                                     </div>
                                 </div>
                                 <div>
@@ -619,7 +678,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.editProduct = function (id) {
       console.log("editProduct chamada com id:", id);
       if (productManager) {
-        const product = productManager.products.find((p) => p.id === id);
+        const product = productManager.produtos.find((p) => p.id === id);
         if (product) {
           productManager.openModal(product);
         } else {
@@ -633,7 +692,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.deleteProduct = function (id) {
       console.log("deleteProduct chamada com id:", id);
       if (productManager) {
-        const product = productManager.products.find((p) => p.id === id);
+        const product = productManager.produtos.find((p) => p.id === id);
         if (product) {
           productManager.currentProduct = product;
 

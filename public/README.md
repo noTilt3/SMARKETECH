@@ -110,9 +110,9 @@ Na interface do Swagger é possível:
 ---
 
 ### 🧾 Endpoints documentados
-- `GET /api/products` → Lista todos os produtos.  
-- `GET /api/products/search?q=termo` → Pesquisa produtos por nome.  
-- `GET /api/products/{id}` → Retorna um produto específico (requer autenticação JWT).  
+- `GET /api/produtos` → Lista todos os produtos.  
+- `GET /api/produtos/search?q=termo` → Pesquisa produtos por nome.  
+- `GET /api/produtos/{id}` → Retorna um produto específico (requer autenticação JWT).  
 
 ---
 
@@ -141,7 +141,7 @@ tests/
     │ └── Produto.unit.test.js
     ├── integration/
     │ ├── auth.integration.test.js
-    │ └── products.integration.test.js
+    │ └── produtos.integration.test.js
     ├── mocks/
     │ └── database.mock.js
     └── setup.js

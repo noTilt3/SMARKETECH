@@ -111,9 +111,9 @@ Na interface do Swagger é possível:
 ---
 
 ### 🧾 Endpoints documentados
-- `GET /api/products` → Lista todos os produtos.  
-- `GET /api/products/search?q=termo` → Pesquisa produtos por nome.  
-- `GET /api/products/{id}` → Retorna um produto específico (requer autenticação JWT).  
+- `GET /api/produtos` → Lista todos os produtos.  
+- `GET /api/produtos/search?q=termo` → Pesquisa produtos por nome.  
+- `GET /api/produtos/{id}` → Retorna um produto específico (requer autenticação JWT).  
 
 ---
 
@@ -131,21 +131,18 @@ O projeto utiliza **Jest** como framework de testes para garantir a qualidade e 
 
 ### 📋 Estrutura de Testes
 
-tests/
-    ├── unit/
-    │ ├── middleware/
-    │ │ ├── auth.unit.test.js
-    │ │ └── validation.unit.test.js
-    │ ├── controllers/
-    │ │ └── controllerProdutos.unit.test.js
-    │ └── models/
-    │ └── Produto.unit.test.js
-    ├── integration/
-    │ ├── auth.integration.test.js
-    │ └── products.integration.test.js
-    ├── mocks/
-    │ ├── auth.mock.js
-    │ └── database.mock.js
+tests
+├── integration
+│   ├── auth.integration.test.js
+│   ├── chat.integration.test.js
+│   ├── pedidos.integration.test.js
+│   └── products.integration.test.js
+└── unit
+    ├── controllers
+    │   └── controllerProducts.unittest.js
+    ├── middleware
+    │   ├── auth.unittest.js
+    │   └── validation.unittest.js
     └── setup.js
 
 ---
@@ -179,9 +176,6 @@ npm test -- --verbose
 
 # Executar testes em série (para evitar conflitos de porta)
 npm test -- --runInBand
-
-# Executar testes específicos
-npm test -- tests/unit/middleware/auth.unit.test.js
 
 # Executar com detecção de handles abertos
 npm test -- --detectOpenHandles

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smarketech - Histórico de Pedidos</title>
+    <link rel="stylesheet" href="/home.css" />
+    <link rel="stylesheet" href="/pedidos.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 class="logo">🛒 Smarketech</h1>
+        <nav class="nav">
+          <a href="/produtos" class="nav-link">Produtos</a>
+          <a href="/relatorios.html" class="nav-link">Relatórios</a>
+          <a href="/pedidos" class="nav-link active">Pedidos</a>
+          <a href="/perfil" class="nav-link">Perfil</a>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm">
+            <i class="fas fa-sign-out-alt"></i> Sair
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <section class="hero">
+          <h2 class="hero-title">Histórico de Pedidos</h2>
+          <p class="hero-subtitle">
+            Acompanhe pedidos, status, valores e itens vendidos
+          </p>
+
+          <div class="filters">
+            <div class="filter-group">
+              <input
+                type="text"
+                id="searchInput"
+                placeholder="Buscar por cliente ou item..."
+              />
+              <button id="searchBtn" class="btn btn-secondary">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            <div class="filter-group">
+              <select id="statusFilter">
+                <option value="">Status: Todos</option>
+                <option value="pendente">Pendente</option>
+                <option value="preparando">Preparando</option>
+                <option value="pronto">Pronto</option>
+                <option value="entregue">Entregue</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>De</label>
+              <input type="date" id="dateFrom" />
+              <label>Até</label>
+              <input type="date" id="dateTo" />
+            </div>
+            <div class="filter-group">
+              <button id="refreshBtn" class="btn btn-secondary">
+                <i class="fas fa-sync-alt"></i> Atualizar
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="produtos-section" style="margin-top: 2rem">
+          <div class="section-header">
+            <h3>Visão Geral</h3>
+          </div>
+          <div class="kpis">
+            <div class="kpi-card">
+              <div class="kpi-title">Pedidos</div>
+              <div class="kpi-value" id="kpiOrders">0</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Faturamento</div>
+              <div class="kpi-value" id="kpiRevenue">R$ 0,00</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Ticket Médio</div>
+              <div class="kpi-value" id="kpiAvgTicket">R$ 0,00</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-title">Itens Vendidos</div>
+              <div class="kpi-value" id="kpiItems">0</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="charts produtos-section">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Tendência de Pedidos</h3>
+            </div>
+            <canvas id="ordersChart" height="120"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Tendência de Faturamento</h3>
+            </div>
+            <canvas id="revenueChart" height="120"></canvas>
+          </div>
+        </section>
+
+        <section class="table-section produtos-section">
+          <div class="section-header">
+            <h3>Pedidos Recentes</h3>
+            <span id="ordersCount" class="product-count">0 pedidos</span>
+          </div>
+          <div class="table-wrapper">
+            <table id="ordersTable">
+              <thead>
+                <tr>
+                  <th data-sort="id">#</th>
+                  <th data-sort="data_pedido">Data</th>
+                  <th data-sort="cliente">Cliente</th>
+                  <th data-sort="status">Status</th>
+                  <th data-sort="total">Total</th>
+                  <th>Itens</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div id="noOrders" class="no-produtos hidden">
+            <i
+              class="fas fa-file-invoice"
+              style="font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem"
+            ></i>
+            <p>Nenhum pedido encontrado.</p>
+          </div>
+          <div id="errorMessage" class="error-message hidden">
+            <i
+              class="fas fa-exclamation-triangle"
+              style="margin-right: 0.5rem"
+            ></i>
+            <p>Erro ao carregar pedidos. Tente novamente.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div id="orderModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Detalhes do Pedido</h2>
+          <span class="close" id="closeOrderModal">&times;</span>
+        </div>
+        <div class="modal-body" id="orderDetails"></div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Smarketech. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="/api.js"></script>
+    <script src="/pedidos.js"></script>
+    <script src="/chat-fab.js"></script>
+  </body>
+</html>

@@ -6,6 +6,12 @@ const authController = require("../controllers/controllerAuth");
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *
  *   schemas:
  *     LoginRequest:
  *       type: object
@@ -46,6 +52,30 @@ const authController = require("../controllers/controllerAuth");
  *           format: date
  *           example: "1990-01-15"
  *
+ *     ForgotPasswordRequest:
+ *       type: object
+ *       required:
+ *         - email
+ *       properties:
+ *         email:
+ *           type: string
+ *           format: email
+ *           example: "usuario@email.com"
+ *
+ *     ResetPasswordRequest:
+ *       type: object
+ *       required:
+ *         - token
+ *         - senha
+ *       properties:
+ *         token:
+ *           type: string
+ *           example: "reset_token_abc123"
+ *         senha:
+ *           type: string
+ *           format: password
+ *           example: "novaSenha123"
+ *
  *     AuthResponse:
  *       type: object
  *       properties:
@@ -84,6 +114,13 @@ const authController = require("../controllers/controllerAuth");
  *               type: string
  *               example: "joao@mercado.com"
  *
+ *     SuccessMessage:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: "Operação realizada com sucesso"
+ *
  *     Error:
  *       type: object
  *       properties:
@@ -96,15 +133,15 @@ const authController = require("../controllers/controllerAuth");
  * @swagger
  * tags:
  *   name: Autenticação
- *   description: Endpoints para gerenciamento de autenticação de administradores
+ *   description: Endpoints para gerenciamento de autenticação
  */
 
 /**
  * @swagger
  * /api/auth/register:
  *   post:
- *     summary: Cadastra um novo administrador
- *     description: Cria uma nova conta de administrador no sistema
+ *     summary: Cadastra um novo usuário
+ *     description: Cria uma nova conta de usuário no sistema
  *     tags: [Autenticação]
  *     requestBody:
  *       required: true
@@ -113,8 +150,8 @@ const authController = require("../controllers/controllerAuth");
  *           schema:
  *             $ref: '#/components/schemas/RegisterRequest'
  *     responses:
- *       200:
- *         description: Administrador cadastrado com sucesso
+ *       201:
+ *         description: Usuário cadastrado com sucesso
  *         content:
  *           application/json:
  *             schema:
@@ -134,8 +171,8 @@ router.post("/register", authController.register);
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Realiza login do administrador
- *     description: Autentica um administrador e retorna um token JWT
+ *     summary: Realiza login do usuário
+ *     description: Autentica um usuário e retorna um token JWT
  *     tags: [Autenticação]
  *     requestBody:
  *       required: true
@@ -163,6 +200,68 @@ router.post("/login", authController.login);
 
 /**
  * @swagger
+ * /api/auth/forgot:
+ *   post:
+ *     summary: Solicita reset de senha
+ *     description: Envia email com token para redefinição de senha
+ *     tags: [Autenticação]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ForgotPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Email de recuperação enviado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessMessage'
+ *       404:
+ *         description: Email não encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post("/forgot", authController.forgot);
+
+/**
+ * @swagger
+ * /api/auth/reset:
+ *   post:
+ *     summary: Redefine a senha do usuário
+ *     description: Altera a senha usando o token de redefinição
+ *     tags: [Autenticação]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ResetPasswordRequest'
+ *     responses:
+ *       200:
+ *         description: Senha redefinida com sucesso
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessMessage'
+ *       400:
+ *         description: Token inválido ou expirado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erro interno do servidor
+ */
+router.post("/reset", authController.reset);
+
+/**
+ * @swagger
  * /api/auth/validate:
  *   get:
  *     summary: Valida o token JWT
@@ -183,13 +282,30 @@ router.post("/login", authController.login);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
- *       403:
- *         description: Acesso negado
+ */
+router.get("/validate", authenticateToken, authController.validate);
+
+/**
+ * @swagger
+ * /api/auth/me:
+ *   delete:
+ *     summary: Remove a conta do usuário autenticado
+ *     description: Exclui permanentemente a conta do usuário atual
+ *     tags: [Autenticação]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       204:
+ *         description: Conta removida com sucesso
+ *       401:
+ *         description: Não autenticado
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Erro interno do servidor
  */
-router.get("/validate", authenticateToken, authController.validate);
+router.delete("/me", authenticateToken, authController.deleteAccount);
 
 module.exports = router;

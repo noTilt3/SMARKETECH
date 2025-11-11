@@ -1,11 +1,11 @@
 const validateProductData = (req, res, next) => {
-  const { nome, precovenda, precocompra, quantidade, dtval } = req.body;
+  const { nome, precovenda, precocompra, qtd, dtval } = req.body;
 
   // Verifica campos obrigatórios
-  if (!nome || !precovenda || !precocompra || !quantidade || !dtval) {
+  if (!nome || !precovenda || !precocompra || !qtd || !dtval) {
     return res.status(400).json({
       error:
-        "Nome, preço de venda, preço de compra, quantidade e data de validade são obrigatórios!",
+        "Nome, preço de venda, preço de compra, qtd e data de validade são obrigatórios!",
     });
   }
 
@@ -28,8 +28,8 @@ const validateProductData = (req, res, next) => {
       .json({ error: "Preço de compra deve ser um número positivo!" });
   }
 
-  // Valida quantidade
-  if (!Number.isInteger(Number(quantidade)) || Number(quantidade) < 0) {
+  // Valida qtd
+  if (!Number.isInteger(Number(qtd)) || Number(qtd) < 0) {
     return res
       .status(400)
       .json({ error: "Quantidade deve ser um inteiro não negativo!" });

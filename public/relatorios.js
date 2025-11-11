@@ -1,7 +1,6 @@
-// Relatórios Manager - Versão Simplificada com Fallback HTML/CSS
 class ReportsManager {
   constructor() {
-    this.products = [];
+    this.produtos = [];
     this.init();
   }
 
@@ -15,7 +14,6 @@ class ReportsManager {
     this.updateStatsCards();
     this.populateTable();
 
-    // Mostrar gráficos HTML/CSS imediatamente
     this.showFallbackCharts();
 
     // Tentar carregar Chart.js como fallback
@@ -43,6 +41,8 @@ class ReportsManager {
     if (updateBtn) {
       updateBtn.addEventListener("click", () => this.updateAllReports());
     }
+
+    // (removido) Botão de remover conta
 
     // Controles da tabela
     const searchInput = document.getElementById("tableSearch");
@@ -78,26 +78,20 @@ class ReportsManager {
   async loadData() {
     try {
       console.log("📊 Carregando dados dos produtos...");
-      const token = localStorage.getItem("authToken");
-      const response = await fetch("/api/products", {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      });
-      if (!response.ok) throw new Error("Erro ao carregar produtos");
 
-      this.products = await response.json();
-      console.log("✅ Produtos carregados:", this.products.length);
+      this.produtos = await apiFetch("/api/produtos");
+      console.log("✅ Produtos carregados:", this.produtos.length);
 
-      // Se não há produtos, criar dados de exemplo
-      if (this.products.length === 0) {
-        this.products = this.generateSampleData();
-        console.log("📝 Usando dados de exemplo:", this.products.length);
+      if (this.produtos.length === 0) {
+        this.produtos = this.generateSampleData();
+        console.log("📝 Usando dados de exemplo:", this.produtos.length);
       }
     } catch (error) {
       console.error("❌ Erro ao carregar dados:", error);
-      this.products = this.generateSampleData();
+      this.produtos = this.generateSampleData();
       console.log(
         "📝 Usando dados de exemplo devido ao erro:",
-        this.products.length
+        this.produtos.length
       );
     }
   }
@@ -107,102 +101,100 @@ class ReportsManager {
       {
         id: 1,
         nome: "Arroz Integral",
-        preco: 8.5,
-        quantidade: 25,
-        data_validade: "2025-06-15",
+        precovenda: 8.5,
+        qtd: 25,
+        dtval: "2025-06-15",
       },
       {
         id: 2,
         nome: "Feijão Preto",
-        preco: 6.8,
-        quantidade: 30,
-        data_validade: "2025-08-20",
+        precovenda: 6.8,
+        qtd: 30,
+        dtval: "2025-08-20",
       },
       {
         id: 3,
         nome: "Açúcar Cristal",
-        preco: 4.2,
-        quantidade: 5,
-        data_validade: "2025-12-10",
+        precovenda: 4.2,
+        qtd: 5,
+        dtval: "2025-12-10",
       },
       {
         id: 4,
         nome: "Óleo de Soja",
-        preco: 7.9,
-        quantidade: 15,
-        data_validade: "2025-04-05",
+        precovenda: 7.9,
+        qtd: 15,
+        dtval: "2025-04-05",
       },
       {
         id: 5,
         nome: "Macarrão Espaguete",
-        preco: 3.5,
-        quantidade: 40,
-        data_validade: "2026-01-15",
+        precovenda: 3.5,
+        qtd: 40,
+        dtval: "2026-01-15",
       },
       {
         id: 6,
         nome: "Leite Integral",
-        preco: 4.8,
-        quantidade: 8,
-        data_validade: "2025-02-28",
+        precovenda: 4.8,
+        qtd: 8,
+        dtval: "2025-02-28",
       },
       {
         id: 7,
         nome: "Café Torrado",
-        preco: 12.9,
-        quantidade: 20,
-        data_validade: "2025-10-30",
+        precovenda: 12.9,
+        qtd: 20,
+        dtval: "2025-10-30",
       },
       {
         id: 8,
         nome: "Açúcar Refinado",
-        preco: 3.8,
-        quantidade: 0,
-        data_validade: "2025-03-15",
+        precovenda: 3.8,
+        qtd: 0,
+        dtval: "2025-03-15",
       },
       {
         id: 9,
         nome: "Farinha de Trigo",
-        preco: 5.6,
-        quantidade: 35,
-        data_validade: "2025-07-22",
+        precovenda: 5.6,
+        qtd: 35,
+        dtval: "2025-07-22",
       },
       {
         id: 10,
         nome: "Sal Refinado",
-        preco: 2.4,
-        quantidade: 50,
-        data_validade: null,
+        precovenda: 2.4,
+        qtd: 50,
+        dtval: null,
       },
       {
         id: 11,
         nome: "Azeite Extra Virgem",
-        preco: 18.9,
-        quantidade: 12,
-        data_validade: "2025-09-18",
+        precovenda: 18.9,
+        qtd: 12,
+        dtval: "2025-09-18",
       },
       {
         id: 12,
         nome: "Vinagre de Álcool",
-        preco: 3.2,
-        quantidade: 18,
-        data_validade: "2025-11-25",
+        precovenda: 3.2,
+        qtd: 18,
+        dtval: "2025-11-25",
       },
     ];
   }
 
   updateStatsCards() {
-    const totalProducts = this.products.length;
-    const totalValue = this.products.reduce(
-      (sum, product) => sum + product.preco * product.quantidade,
+    const totalProducts = this.produtos.length;
+    const totalValue = this.produtos.reduce(
+      (sum, product) => sum + product.precovenda * product.qtd,
       0
     );
-    const lowStock = this.products.filter(
-      (product) => product.quantidade < 10
-    ).length;
-    const expiringSoon = this.products.filter((product) => {
-      if (!product.data_validade) return false;
-      const validityDate = new Date(product.data_validade);
+    const lowStock = this.produtos.filter((product) => product.qtd < 10).length;
+    const expiringSoon = this.produtos.filter((product) => {
+      if (!product.dtval) return false;
+      const validityDate = new Date(product.dtval);
       const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       return validityDate <= thirtyDaysFromNow;
     }).length;
@@ -316,9 +308,9 @@ class ReportsManager {
       { min: 100, max: Infinity, label: "R$ 100+", count: 0 },
     ];
 
-    this.products.forEach((product) => {
+    this.produtos.forEach((product) => {
       priceRanges.forEach((range) => {
-        if (product.preco >= range.min && product.preco < range.max) {
+        if (product.precovenda >= range.min && product.precovenda < range.max) {
           range.count++;
         }
       });
@@ -371,14 +363,12 @@ class ReportsManager {
     if (!ctx) return;
 
     const stockStatus = {
-      "Estoque Alto": this.products.filter((p) => p.quantidade >= 50).length,
-      "Estoque Médio": this.products.filter(
-        (p) => p.quantidade >= 10 && p.quantidade < 50
-      ).length,
-      "Estoque Baixo": this.products.filter(
-        (p) => p.quantidade < 10 && p.quantidade > 0
-      ).length,
-      "Sem Estoque": this.products.filter((p) => p.quantidade === 0).length,
+      "Estoque Alto": this.produtos.filter((p) => p.qtd >= 50).length,
+      "Estoque Médio": this.produtos.filter((p) => p.qtd >= 10 && p.qtd < 50)
+        .length,
+      "Estoque Baixo": this.produtos.filter((p) => p.qtd < 10 && p.qtd > 0)
+        .length,
+      "Sem Estoque": this.produtos.filter((p) => p.qtd === 0).length,
     };
 
     new Chart(ctx.getContext("2d"), {
@@ -467,8 +457,8 @@ class ReportsManager {
     const ctx = document.getElementById("topProductsChartCanvas");
     if (!ctx) return;
 
-    const topProducts = this.products
-      .sort((a, b) => b.preco * b.quantidade - a.preco * a.quantidade)
+    const topProducts = this.produtos
+      .sort((a, b) => b.precovenda * b.qtd - a.precovenda * a.qtd)
       .slice(0, 8);
 
     new Chart(ctx.getContext("2d"), {
@@ -480,7 +470,7 @@ class ReportsManager {
         datasets: [
           {
             label: "Valor Total (R$)",
-            data: topProducts.map((p) => p.preco * p.quantidade),
+            data: topProducts.map((p) => p.precovenda * p.qtd),
             backgroundColor: "rgba(16, 185, 129, 0.8)",
             borderColor: "rgba(16, 185, 129, 1)",
             borderWidth: 2,
@@ -507,18 +497,18 @@ class ReportsManager {
     if (!ctx) return;
 
     const validityRanges = {
-      Vencidos: this.products.filter(
-        (p) => p.data_validade && new Date(p.data_validade) < new Date()
+      Vencidos: this.produtos.filter(
+        (p) => p.dtval && new Date(p.dtval) < new Date()
       ).length,
-      "Vence em 7 dias": this.products.filter((p) => {
-        if (!p.data_validade) return false;
-        const validityDate = new Date(p.data_validade);
+      "Vence em 7 dias": this.produtos.filter((p) => {
+        if (!p.dtval) return false;
+        const validityDate = new Date(p.dtval);
         const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         return validityDate <= sevenDaysFromNow && validityDate >= new Date();
       }).length,
-      "Vence em 30 dias": this.products.filter((p) => {
-        if (!p.data_validade) return false;
-        const validityDate = new Date(p.data_validade);
+      "Vence em 30 dias": this.produtos.filter((p) => {
+        if (!p.dtval) return false;
+        const validityDate = new Date(p.dtval);
         const thirtyDaysFromNow = new Date(
           Date.now() + 30 * 24 * 60 * 60 * 1000
         );
@@ -527,9 +517,9 @@ class ReportsManager {
           validityDate > new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         );
       }).length,
-      "Vence em 90 dias": this.products.filter((p) => {
-        if (!p.data_validade) return false;
-        const validityDate = new Date(p.data_validade);
+      "Vence em 90 dias": this.produtos.filter((p) => {
+        if (!p.dtval) return false;
+        const validityDate = new Date(p.dtval);
         const ninetyDaysFromNow = new Date(
           Date.now() + 90 * 24 * 60 * 60 * 1000
         );
@@ -538,15 +528,15 @@ class ReportsManager {
           validityDate > new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         );
       }).length,
-      "Vence em mais de 90 dias": this.products.filter((p) => {
-        if (!p.data_validade) return false;
-        const validityDate = new Date(p.data_validade);
+      "Vence em mais de 90 dias": this.produtos.filter((p) => {
+        if (!p.dtval) return false;
+        const validityDate = new Date(p.dtval);
         const ninetyDaysFromNow = new Date(
           Date.now() + 90 * 24 * 60 * 60 * 1000
         );
         return validityDate > ninetyDaysFromNow;
       }).length,
-      "Sem validade": this.products.filter((p) => !p.data_validade).length,
+      "Sem validade": this.produtos.filter((p) => !p.dtval).length,
     };
 
     new Chart(ctx.getContext("2d"), {
@@ -592,24 +582,22 @@ class ReportsManager {
   }
 
   populateTable() {
-    const tbody = document.getElementById("productsTableBody");
+    const tbody = document.getElementById("produtosTableBody");
     if (!tbody) return;
 
     tbody.innerHTML = "";
 
-    this.products.forEach((product) => {
+    this.produtos.forEach((product) => {
       const row = document.createElement("tr");
       row.innerHTML = `
                 <td>${product.nome}</td>
-                <td>R$ ${product.preco.toLocaleString("pt-BR", {
+                <td>R$ ${product.precovenda.toLocaleString("pt-BR", {
                   minimumFractionDigits: 2,
                 })}</td>
-                <td>${product.quantidade}</td>
+                <td>${product.qtd}</td>
                 <td>${
-                  product.data_validade
-                    ? new Date(product.data_validade).toLocaleDateString(
-                        "pt-BR"
-                      )
+                  product.dtval
+                    ? new Date(product.dtval).toLocaleDateString("pt-BR")
                     : "N/A"
                 }</td>
                 <td>
@@ -617,27 +605,20 @@ class ReportsManager {
                         ${this.getStatusText(product)}
                     </span>
                 </td>
-                <td>
-                    <button class="btn btn-sm btn-primary" onclick="viewProduct(${
-                      product.id
-                    })">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
             `;
       tbody.appendChild(row);
     });
 
-    console.log("📋 Tabela populada com", this.products.length, "produtos");
+    console.log("📋 Tabela populada com", this.produtos.length, "produtos");
   }
 
   getStatusClass(product) {
-    if (product.quantidade === 0) return "status-out";
-    if (product.quantidade < 10) return "status-low";
-    if (product.data_validade && new Date(product.data_validade) < new Date())
+    if (product.qtd === 0) return "status-out";
+    if (product.qtd < 10) return "status-low";
+    if (product.dtval && new Date(product.dtval) < new Date())
       return "status-expired";
-    if (product.data_validade) {
-      const validityDate = new Date(product.data_validade);
+    if (product.dtval) {
+      const validityDate = new Date(product.dtval);
       const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       if (validityDate <= sevenDaysFromNow) return "status-expiring";
     }
@@ -645,12 +626,11 @@ class ReportsManager {
   }
 
   getStatusText(product) {
-    if (product.quantidade === 0) return "Sem Estoque";
-    if (product.quantidade < 10) return "Estoque Baixo";
-    if (product.data_validade && new Date(product.data_validade) < new Date())
-      return "Vencido";
-    if (product.data_validade) {
-      const validityDate = new Date(product.data_validade);
+    if (product.qtd === 0) return "Sem Estoque";
+    if (product.qtd < 10) return "Estoque Baixo";
+    if (product.dtval && new Date(product.dtval) < new Date()) return "Vencido";
+    if (product.dtval) {
+      const validityDate = new Date(product.dtval);
       const sevenDaysFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       if (validityDate <= sevenDaysFromNow) return "Vencendo";
     }
@@ -658,7 +638,7 @@ class ReportsManager {
   }
 
   filterTable(searchTerm) {
-    const rows = document.querySelectorAll("#productsTableBody tr");
+    const rows = document.querySelectorAll("#produtosTableBody tr");
     rows.forEach((row) => {
       const text = row.textContent.toLowerCase();
       if (text.includes(searchTerm.toLowerCase())) {
@@ -670,7 +650,7 @@ class ReportsManager {
   }
 
   sortTable(sortBy) {
-    const tbody = document.getElementById("productsTableBody");
+    const tbody = document.getElementById("produtosTableBody");
     if (!tbody) return;
 
     const rows = Array.from(tbody.querySelectorAll("tr"));
@@ -683,7 +663,7 @@ class ReportsManager {
           aVal = a.cells[0].textContent;
           bVal = b.cells[0].textContent;
           return aVal.localeCompare(bVal);
-        case "preco":
+        case "precovenda":
           aVal = parseFloat(
             a.cells[1].textContent.replace("R$ ", "").replace(",", ".")
           );
@@ -691,7 +671,7 @@ class ReportsManager {
             b.cells[1].textContent.replace("R$ ", "").replace(",", ".")
           );
           return bVal - aVal;
-        case "quantidade":
+        case "qtd":
           aVal = parseInt(a.cells[2].textContent);
           bVal = parseInt(b.cells[2].textContent);
           return bVal - aVal;

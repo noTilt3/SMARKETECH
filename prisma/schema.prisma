@@ -1,0 +1,90 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["public", "auth"]
+}
+
+model adms {
+  id            Int       @id @default(autoincrement())
+  nome          String
+  email         String    @unique
+  senha         String
+  dtnasc        DateTime
+  dtcad         DateTime  @default(now())
+  foto          Bytes?
+  reset_token   String?
+  reset_expires DateTime?
+  twofa_enabled Boolean   @default(false)
+  twofa_secret  String?
+
+  // Campos de relação para o chat
+  contatos_as_user    contatos[]  @relation("ContactsUser")
+  contatos_as_contact contatos[]  @relation("ContactsContact")
+  sent_mensagens      mensagens[] @relation("MessagesSender")
+  received_mensagens  mensagens[] @relation("MessagesReceiver")
+
+  @@schema("public")
+}
+
+model produtos {
+  id          Int       @id @default(autoincrement())
+  nome        String
+  precovenda  Decimal   @db.Decimal(10, 2)
+  precocompra Decimal   @db.Decimal(10, 2)
+  qtd         Int
+  dtval       DateTime?
+  ativo       Boolean   @default(true)
+
+  @@schema("public")
+}
+
+model Pedidos {
+  id          Int      @id @default(autoincrement())
+  cliente     String   @default("Cliente Totem")
+  itens       String
+  total       Decimal  @db.Decimal(10, 2)
+  status      String   @default("pendente")
+  data_pedido DateTime @default(now()) @db.Timestamptz(6)
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@map("pedidos")
+  @@schema("public")
+}
+
+model contatos {
+  id              Int      @id @default(autoincrement())
+  user_id         Int
+  contact_user_id Int
+  created_at      DateTime @default(now())
+
+  // ✅ Relações com nomes únicos
+  user         adms @relation("ContactsUser", fields: [user_id], references: [id], onDelete: Cascade)
+  contact_user adms @relation("ContactsContact", fields: [contact_user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, contact_user_id])
+  @@index([user_id])
+  @@index([contact_user_id])
+  @@schema("public")
+}
+
+model mensagens {
+  id          Int       @id @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  content     String    @db.Text
+  created_at  DateTime  @default(now())
+  read_at     DateTime?
+
+  // ✅ Relações com nomes únicos
+  sender   adms @relation("MessagesSender", fields: [sender_id], references: [id], onDelete: Cascade)
+  receiver adms @relation("MessagesReceiver", fields: [receiver_id], references: [id], onDelete: Cascade)
+
+  @@index([sender_id, receiver_id, created_at])
+  @@index([receiver_id, sender_id, created_at])
+  @@schema("public")
+}

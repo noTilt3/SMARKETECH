@@ -1,8 +1,10 @@
+process.env.JWT_SECRET = 'fallback-secret';
+const jwt = require('jsonwebtoken');
 const request = require("supertest");
 const app = require("../../server");
 
-describe("Auth API - Integration (real flow)", () => {
-  test("should register, login and validate token", async () => {
+describe("Auth API - Integração", () => {
+  test("deve registrar, logar e validar o token", async () => {
     const unique = Date.now();
     const user = {
       nome: `User ${unique}`,
@@ -12,7 +14,9 @@ describe("Auth API - Integration (real flow)", () => {
     };
 
     // Register
-    const registerRes = await request(app).post("/api/auth/register").send(user);
+    const registerRes = await request(app)
+      .post("/api/auth/register")
+      .send(user);
     expect(registerRes.status).toBe(200);
     expect(registerRes.body).toHaveProperty("token");
 

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto,
+          Helvetica, Arial, sans-serif;
+        background: #fff;
+      }
+      .chat-root {
+        display: flex;
+        height: 100vh;
+      }
+      .sidebar {
+        width: 36%;
+        min-width: 200px;
+        max-width: 260px;
+        border-right: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+      }
+      .sidebar-header {
+        padding: 10px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        gap: 8px;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 5;
+      }
+      .sidebar-header input {
+        flex: 1;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 10px 12px;
+        outline: none;
+        transition: box-shadow 0.2s;
+      }
+      .sidebar-header input:focus {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        border-color: #c7d2fe;
+      }
+      .sidebar-header button {
+        border: none;
+        background: #6366f1;
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .sidebar-header button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(99, 102, 241, 0.25);
+      }
+      .contact-list {
+        overflow: auto;
+      }
+      .contact {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .contact:hover {
+        background: #f8fafc;
+      }
+      .contact.active {
+        background: #eef2ff;
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.8rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+      .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .conv-header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(135deg, #eef2ff, #f0fdf4);
+        position: sticky;
+        top: 0;
+        z-index: 5;
+      }
+      .conv-title {
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .mensagens {
+        flex: 1;
+        padding: 14px;
+        overflow: auto;
+        background: #f8fafc;
+      }
+      .msg {
+        max-width: 78%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        line-height: 1.35;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        position: relative;
+      }
+      .msg .time {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.72rem;
+        opacity: 0.75;
+      }
+      .msg.me {
+        background: linear-gradient(135deg, #6366f1, #22c55e);
+        color: #fff;
+        margin-left: auto;
+        border-bottom-right-radius: 6px;
+      }
+      .msg.other {
+        background: #fff;
+        color: #0f172a;
+        border: 1px solid #e5e7eb;
+        border-bottom-left-radius: 6px;
+      }
+      .composer {
+        display: flex;
+        gap: 10px;
+        padding: 12px;
+        border-top: 1px solid #e5e7eb;
+        background: #fff;
+      }
+      .composer input {
+        flex: 1;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        padding: 12px 16px;
+        outline: none;
+      }
+      .composer input:focus {
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+        border-color: #bbf7d0;
+      }
+      .composer button {
+        border: none;
+        background: #22c55e;
+        color: #fff;
+        border-radius: 999px;
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+      }
+      .composer button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(34, 197, 94, 0.25);
+      }
+      .empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        height: 100%;
+        font-size: 0.95rem;
+      }
+      .error {
+        color: #b91c1c;
+        font-size: 0.86rem;
+        padding: 6px 10px;
+      }
+      .contact-list::-webkit-scrollbar,
+      .mensagens::-webkit-scrollbar {
+        width: 8px;
+      }
+      .contact-list::-webkit-scrollbar-thumb,
+      .mensagens::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 999px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-root">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <input
+            id="addEmail"
+            type="email"
+            placeholder="Adicionar por e-mail"
+          />
+          <button id="addBtn"><i class="fas fa-user-plus"></i></button>
+        </div>
+        <div id="contactError" class="error" style="display: none"></div>
+        <div
+          id="contactSuccess"
+          style="
+            display: none;
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            margin: 6px 10px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+          "
+        ></div>
+        <div id="contatos" class="contact-list"></div>
+      </aside>
+      <section class="content">
+        <div id="convHeader" class="conv-header">
+          <i class="fas fa-user"></i
+          ><span id="convTitle">Selecione um contato</span>
+        </div>
+        <div id="mensagens" class="mensagens">
+          <div class="empty">Nenhuma conversa selecionada</div>
+        </div>
+        <div class="composer">
+          <input
+            id="msgInput"
+            type="text"
+            placeholder="Escreva uma mensagem"
+            disabled
+          />
+          <button id="sendBtn" disabled>
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <script src="/api.js"></script>
+    <script src="/chat.js"></script>
+    <script src="/chat-init.js"></script>
+  </body>
+</html>

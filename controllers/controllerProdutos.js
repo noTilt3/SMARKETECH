@@ -1,4 +1,4 @@
-const Product = require("../models/Produto");
+const ProductService = require("../service/produtoService");
 
 /**
  * @swagger
@@ -10,7 +10,7 @@ const Product = require("../models/Produto");
  *         - nome
  *         - precovenda
  *         - precocompra
- *         - quantidade
+ *         - qtd
  *       properties:
  *         id:
  *           type: integer
@@ -20,13 +20,13 @@ const Product = require("../models/Produto");
  *           example: "Arroz Integral"
  *         precovenda:
  *           type: number
- *           format: float
+ *           format: decimal
  *           example: 8.50
  *         precocompra:
  *           type: number
- *           format: float
+ *           format: decimal
  *           example: 6.50
- *         quantidade:
+ *         qtd:
  *           type: integer
  *           example: 25
  *         dtval:
@@ -44,20 +44,20 @@ const Product = require("../models/Produto");
  *         - nome
  *         - precovenda
  *         - precocompra
- *         - quantidade
+ *         - qtd
  *       properties:
  *         nome:
  *           type: string
  *           example: "Arroz Integral"
  *         precovenda:
  *           type: number
- *           format: float
+ *           format: decimal
  *           example: 8.50
  *         precocompra:
  *           type: number
- *           format: float
+ *           format: decimal
  *           example: 6.50
- *         quantidade:
+ *         qtd:
  *           type: integer
  *           example: 25
  *         dtval:
@@ -79,7 +79,7 @@ const Product = require("../models/Produto");
  *           type: number
  *           format: float
  *           example: 6.50
- *         quantidade:
+ *         qtd:
  *           type: integer
  *           example: 25
  *         dtval:
@@ -106,7 +106,7 @@ const Product = require("../models/Produto");
 
 /**
  * @swagger
- * /api/products:
+ * /api/produtos:
  *   get:
  *     summary: Lista todos os produtos
  *     description: Retorna todos os produtos cadastrados no sistema
@@ -129,8 +129,8 @@ const Product = require("../models/Produto");
  */
 async function getAllProducts(req, res) {
   try {
-    const products = await Product.getAll();
-    res.json(products);
+    const produtos = await ProductService.listarProdutos();
+    res.json(produtos);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -138,7 +138,7 @@ async function getAllProducts(req, res) {
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   get:
  *     summary: Obtém um produto específico
  *     description: Retorna os detalhes de um produto pelo seu ID
@@ -172,10 +172,11 @@ async function getAllProducts(req, res) {
  */
 async function getProductById(req, res) {
   try {
-    const product = await Product.getById(req.params.id);
-    if (!product)
+    const product = await ProductService.buscarProdutoPorId(req.params.id);
+    if (!product) {
       return res.status(404).json({ error: "Produto não encontrado!" });
-    res.json(product);
+    }
+    return res.json(product);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -183,7 +184,7 @@ async function getProductById(req, res) {
 
 /**
  * @swagger
- * /api/products/search:
+ * /api/produtos/search:
  *   get:
  *     summary: Busca produtos por nome
  *     description: Retorna produtos que correspondem ao termo de busca
@@ -222,8 +223,8 @@ async function searchProducts(req, res) {
     const { q } = req.query;
     if (!q)
       return res.status(400).json({ error: "Termo de busca necessário!" });
-    const products = await Product.searchByName(q);
-    res.json(products);
+    const produtos = await ProductService.buscarProdutosPorNome(q);
+    res.json(produtos);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -231,7 +232,7 @@ async function searchProducts(req, res) {
 
 /**
  * @swagger
- * /api/products:
+ * /api/produtos:
  *   post:
  *     summary: Cria um novo produto
  *     description: Adiciona um novo produto ao sistema
@@ -264,12 +265,12 @@ async function searchProducts(req, res) {
  */
 async function createProduct(req, res) {
   try {
-    const { nome, precovenda, precocompra, quantidade, dtval } = req.body;
-    const newProduct = await Product.create({
+    const { nome, precovenda, precocompra, qtd, dtval } = req.body;
+    const newProduct = await ProductService.criarProduto({
       nome,
       precovenda,
       precocompra,
-      qtd: quantidade,
+      qtd,
       dtval,
     });
     res
@@ -282,7 +283,7 @@ async function createProduct(req, res) {
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   put:
  *     summary: Atualiza um produto
  *     description: Atualiza os dados de um produto existente
@@ -329,28 +330,27 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
   try {
     const { id } = req.params;
-    const { nome, precovenda, precocompra, quantidade, dtval } = req.body;
-    const updatedProduct = await Product.update(id, {
+    const { nome, precovenda, precocompra, qtd, dtval } = req.body;
+    const updatedProduct = await ProductService.atualizarProduto(id, {
       nome,
       precovenda,
       precocompra,
-      qtd: quantidade,
+      qtd,
       dtval,
     });
-    if (!updatedProduct)
-      return res.status(404).json({ error: "Produto não encontrado!" });
     res.json({
       message: "Produto atualizado com sucesso!",
       product: updatedProduct,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const status = error.message === "Produto não encontrado!" ? 404 : 500;
+    res.status(status).json({ error: error.message });
   }
 }
 
 /**
  * @swagger
- * /api/products/{id}:
+ * /api/produtos/{id}:
  *   delete:
  *     summary: Exclui um produto
  *     description: Remove um produto do sistema
@@ -385,12 +385,11 @@ async function updateProduct(req, res) {
 async function deleteProduct(req, res) {
   try {
     const { id } = req.params;
-    const deleted = await Product.delete(id);
-    if (!deleted)
-      return res.status(404).json({ error: "Produto não encontrado!" });
+    await ProductService.deletarProduto(id);
     res.json({ message: "Produto deletado com sucesso!" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    const status = error.message === "Produto não encontrado!" ? 404 : 500;
+    res.status(status).json({ error: error.message });
   }
 }
 

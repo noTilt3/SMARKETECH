@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil</title>
+    <link rel="stylesheet" href="/home.css" />
+    <link rel="stylesheet" href="/perfil.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <h1 class="logo">🛒 Smarketech</h1>
+        <nav class="nav">
+          <a href="/produtos" class="nav-link">Produtos</a>
+          <a href="/relatorios.html" class="nav-link">Relatórios</a>
+          <a href="/pedidos" class="nav-link">Pedidos</a>
+          <a href="/perfil" class="nav-link active">Perfil</a>
+          <button id="logoutBtn" class="btn btn-secondary btn-sm">
+            <i class="fas fa-sign-out-alt"></i> Sair
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <section class="hero">
+          <h1 class="hero-title">Meu Perfil</h1>
+          <p class="hero-subtitle">Visualize e atualize suas informações</p>
+        </section>
+
+        <section class="perfil-card">
+          <div class="perfil-left">
+            <div class="avatar-wrapper">
+              <img
+                id="perfilAvatar"
+                class="avatar"
+                src="/avatar-placeholder.png"
+                alt="Foto do perfil"
+              />
+            </div>
+            <label class="btn btn-primary btn-upload">
+              <input id="fotoInput" type="file" accept="image/*" hidden />
+              Alterar foto
+            </label>
+            <button id="removerFotoBtn" class="btn btn-secondary btn-outlined">
+              Remover foto
+            </button>
+          </div>
+
+          <div class="perfil-right">
+            <div class="form-group">
+              <label for="nome">Nome</label>
+              <input id="nome" type="text" placeholder="Seu nome" />
+            </div>
+            <div class="form-group">
+              <label for="email">E-mail</label>
+              <input id="email" type="email" disabled />
+            </div>
+            <div class="form-group">
+              <label for="dtnasc">Data de nascimento</label>
+              <input id="dtnasc" type="date" />
+            </div>
+            <div class="actions">
+              <button id="salvarBtn" class="btn btn-primary">
+                Salvar alterações
+              </button>
+            </div>
+            <div class="actions" style="margin-top: 12px">
+              <button id="deleteAccountBtn" class="btn btn-danger btn-outlined">
+                <i class="fas fa-user-slash"></i> Remover minha conta
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div id="feedback" class="feedback" style="display: none"></div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 Smarketech. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div
+      id="deleteModal"
+      style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      "
+    >
+      <div
+        style="
+          max-width: 440px;
+          margin: 10% auto;
+          background: #fff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        "
+      >
+        <div
+          style="
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+          "
+        >
+          <i class="fas fa-user-slash" style="color: #ef4444"></i>
+          <h3 style="margin: 0; font-size: 1.1rem">
+            Confirmar exclusão da conta
+          </h3>
+        </div>
+        <div style="padding: 20px">
+          <p style="margin: 0 0 12px 0; color: #444">
+            Esta ação é <strong>irreversível</strong>. Para confirmar, informe
+            sua senha:
+          </p>
+          <input
+            id="deletePasswordInput"
+            type="password"
+            placeholder="Sua senha"
+            class="form-control"
+            style="width: 100%"
+          />
+          <div
+            id="deleteError"
+            style="
+              display: none;
+              color: #b91c1c;
+              font-size: 0.9rem;
+              margin-top: 8px;
+            "
+          ></div>
+        </div>
+        <div
+          style="
+            padding: 14px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            border-top: 1px solid #eee;
+            background: #fafafa;
+          "
+        >
+          <button id="deleteCancelBtn" class="btn btn-secondary btn-sm">
+            Cancelar
+          </button>
+          <button id="deleteConfirmBtn" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i> Excluir conta
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/api.js"></script>
+    <script src="/perfil.js"></script>
+    <script src="/chat-fab.js"></script>
+  </body>
+</html>

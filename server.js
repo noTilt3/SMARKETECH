@@ -49,8 +49,20 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-// Middleware de segurança
-app.use(helmet());
+// Middleware de segurança - helmet
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      "script-src": [
+        "'self'",
+        "https://cdn.jsdelivr.net",
+        "https://cdnjs.cloudflare.com",
+      ],
+      "connect-src": ["'self'", "https://cdn.jsdelivr.net"],
+    },
+  })
+);
 
 // CORS
 app.use(
@@ -61,12 +73,12 @@ app.use(
 );
 
 // Middleware
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "25mb" }));
 app.use(express.static("public"));
 
 // Rotas da API
 const productRoutes = require("./routes/produtos");
-app.use("/api/products", productRoutes);
+app.use("/api/produtos", productRoutes);
 
 // Rotas do sistema (páginas e health)
 const systemRoutes = require("./routes/system");
@@ -74,6 +86,15 @@ app.use("/", systemRoutes);
 
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes);
+
+const pedidosRoutes = require("./routes/pedidos");
+app.use("/api/pedidos", pedidosRoutes);
+
+const perfilRoutes = require("./routes/perfil");
+app.use("/api/perfil", perfilRoutes);
+
+const chatRoutes = require("./routes/chat");
+app.use("/api/chat", chatRoutes);
 
 // Rota da documentação Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
